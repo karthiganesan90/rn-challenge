@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import BranchesInput from './src/BranchesInput';
@@ -6,40 +6,35 @@ import { SearchLocation } from './src/SearchLocation';
 import Map from './src/Map';
 import Spinner from './src/Spinner';
 import useLoading from './src/useLoading';
-import { Branch } from './src/Branch';
-import { closestBranchTo } from './src/distances';
 import BranchDetails from './src/BranchDetails';
+import ClosestBranchProvider from './src/ClosestBranchProvider';
+
 
 export default function App() {
   const [state, branches] = useLoading();
   const [search, setSearch] = useState<SearchLocation>();
-  const [closest, setClosest] = useState<undefined | Branch>();
-  useEffect(() => {
-    if (branches && typeof search === 'object') {
-      setClosest(closestBranchTo(search, branches));
-    } else {
-      setClosest(undefined);
-    }
-  }, [search, branches]);
+
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-      <Map closest={closest} />
-      {state === 'ready' ? (
-        <>
-          <BranchesInput search={search} setSearch={setSearch} />
-          {closest && <BranchDetails branch={closest} />}
-        </>
-      ) : state === 'error' ? (
-        <View style={styles.centred}>
-          <Text style={styles.error}>An error has occurred</Text>
-        </View>
-      ) : (
-        <View style={styles.centred}>
-          <Spinner height={60} />
-        </View>
-      )}
-    </View>
+    <ClosestBranchProvider search={search} branches={branches}>
+      <View style={styles.container}>
+        <StatusBar style="auto" />
+        <Map/>
+        {state === 'ready' ? (
+          <>
+            <BranchesInput search={search} setSearch={setSearch} />
+            <BranchDetails/>
+          </>
+        ) : state === 'error' ? (
+          <View style={styles.centred}>
+            <Text style={styles.error}>An error has occurred</Text>
+          </View>
+        ) : (
+          <View style={styles.centred}>
+            <Spinner height={60} />
+          </View>
+        )}
+      </View>
+    </ClosestBranchProvider>
   );
 }
 

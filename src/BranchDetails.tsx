@@ -1,28 +1,35 @@
 import { StyleSheet, View, Text } from 'react-native';
-import { Branch } from './Branch';
+import { useClosestBranch } from './ClosestBranchProvider';
 
-export default function BranchDetails({ branch }: { branch: Branch }) {
+export default function BranchDetails() {
+  const closest = useClosestBranch();
   return (
-    <View style={styles.container}>
-      <View style={styles.row}>
-        <Text style={styles.text}>Branch name:</Text>
-        <Text style={styles.textBold}>{branch.Name}</Text>
-      </View>
-      {branch.ServiceAndFacility && (
-        <View style={styles.row}>
-          <Text style={styles.text}>Services:</Text>
-          <Text style={styles.textBold}>
-            {branch.ServiceAndFacility.join(', ')}
-          </Text>
+    <>
+      {closest && (
+        <View style={styles.container}>
+          <View style={styles.row}>
+            <Text style={styles.text}>Branch name:</Text>
+            <Text style={styles.textBold}>{closest.Name}</Text>
+          </View>
+          {closest.ServiceAndFacility && (
+            <View style={styles.row}>
+              <Text style={styles.text}>Services:</Text>
+              <Text style={styles.textBold}>
+                {closest.ServiceAndFacility.join(', ')}
+              </Text>
+            </View>
+          )}
+          {closest.Accessibility && (
+            <View style={styles.row}>
+              <Text style={styles.text}>Accessibility:</Text>
+              <Text style={styles.textBold}>
+                {closest.Accessibility.join(', ')}
+              </Text>
+            </View>
+          )}
         </View>
       )}
-      {branch.Accessibility && (
-        <View style={styles.row}>
-          <Text style={styles.text}>Accessibility:</Text>
-          <Text style={styles.textBold}>{branch.Accessibility.join(', ')}</Text>
-        </View>
-      )}
-    </View>
+    </>
   );
 }
 
